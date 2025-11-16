@@ -1,0 +1,73 @@
+from random import randint
+# lets keep post origins at news.posts file
+from news.posts import hyacint_mac, mcDona_news, habr_article
+
+
+User.objects.create_user(username = 'Ivan')
+User.objects.create_user(username = 'Kevin')
+
+ivan = User.objects.get(username='Ivan')
+author_1 = Author.objects.create(user=ivan)
+kevin = User.objects.get(username = 'Kevin')
+author_2 = Author.objects.create(user=kevin)
+
+politics = Category.objects.create(category_name = 'politics')
+sport = Category.objects.create(category_name = 'sport')
+nature = Category.objects.create(category_name = 'nature')
+culture = Category.objects.create(category_name = 'culture')
+
+post_1 = Post.objects.create(author = author_1, post_type = 'a', title = hyacint_mac.post_title, text = hyacint_mac.post_text)
+post_2 = Post.objects.create(author = author_2, post_type = 'n', title = mcDona_news.post_title, text = mcDona_news.post_text)
+post_3 = Post.objects.create(author = author_1, post_type = 'a', title = habr_article.post_title, text = habr_article.post_text)
+
+# let's add/change some categories
+Category.objects.filter(category_name="sport").update(category_name="business")
+Category.objects.filter(id = 1).update(category_name="science")
+
+post_cat_1 = PostCategory.objects.create(post = post_1, category = Category.objects.get(category_name="nature"))
+post_cat_2 = PostCategory.objects.create(post = post_1, category = Category.objects.get(category_name="science"))
+post_cat_3 = PostCategory.objects.create(post = post_2, category = Category.objects.get(category_name="business"))
+post_cat_4 = PostCategory.objects.create(post = post_3, category = Category.objects.get(category_name="science"))
+
+sonya = User.objects.create(username = 'Sonya', first_name = 'Sophia', email = 'sonya@thebest.com')
+tanya = User.objects.create(username = 'Tanya', first_name = 'Tatiana', email = 'tanya@thebest.com')
+
+comm_1 = Comment.objects.create(post = post_1, user = tanya, text = 'interesting')
+comm_2 = Comment.objects.create(post = post_2, user = sonya, text = 'first time heard of that')
+comm_3 = Comment.objects.create(post = post_3, user = kevin, text = 'good to know')             
+comm_4 = Comment.objects.create(post = post_2, user = ivan, text = 'that\'s fine')
+
+# randomly like/dislike
+for item in Post.objects.all():    
+    for i in range(randint(0, 10)):
+            item.like()
+    for j in range(randint(0, 5)):
+            item.dislike()
+
+# randomly like/dislike
+for item in Comment.objects.all():    
+    for i in range(randint(0, 10)):
+            item.like()
+    for j in range(randint(0, 5)):
+            item.dislike()
+
+author_2.update_rating()
+author_1.update_rating()
+
+best_post = Post.objects.order_by('-rating').first()
+print(f"Date: {best_post.date_time.date()}")
+print(f"Author: {best_post.author.user.username}")
+print(f"Rating: {best_post.rating}")
+print(f"Title: {best_post.title}")
+print(f"Preview: {best_post.preview()}")
+
+comments = Comment.objects.filter(post=best_post)
+
+for comment in comments:
+    print(f"Date: {comment.date_time.date()}")
+    print(f"User: {comment.user.username}")
+    print(f"Rating: {comment.rating}")
+    print(f"Text: {comment.text}")
+    print("*" * 80)
+
+
