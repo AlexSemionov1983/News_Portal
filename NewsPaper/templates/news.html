@@ -1,12 +1,13 @@
 <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
 
-<!-- Название у нас будет products -->
+{% load custom_filters %}
+<!-- Название у нас будет NewsPortal news -->
 {% block title %}
 NewsPortal news
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим все товары -->
+<!-- В контенте на странице мы выводим все новости -->
 {% block content %}
     <!-- Выводим новости, только если они есть с помощью тега if -->
     {% if news %}
@@ -33,9 +34,9 @@ NewsPortal news
                 от переменных в Python. Здесь также можно получать доступ к
                 полям объекта модели. Например, здесь мы выводим имя,
                 в следующем столбце описание, и т.д.  -->
-                <td>{{ item.title }}</td>
+                <td>{{ item.title|censor }}</td>
                 <td>{{ item.date_time|date:'d M Y' }}</td>
-                <td>{{ item.text|truncatewords:20 }}
+                <td>{{ item.text|truncatewords:20|censor }}
             {% endfor %}
        </table> <!-- ... и таблицы -->
     {% else %}
