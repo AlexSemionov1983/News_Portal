@@ -9,38 +9,98 @@ NewsPortal news
 
 <!-- В контенте на странице мы выводим все новости -->
 {% block content %}
-    <!-- Выводим новости, только если они есть с помощью тега if -->
-    {% if news %}
-        <h1 style="text-align: left;">Всего новостей: {{ news|length }}</h1>
-        <table> <!-- Начинаем описывать таблицу -->
-            <tr> <!-- Добавляем строку -->
-                <td> <!-- Добавляем ячейку в строку -->
-                    Заголовок
-                </td>
-                <td> <!-- Добавляем ещё одну ячейку в строку и так далее -->
-                    Дата публикации
-                </td>
-                <td>
-                    Предпросмотр
-                </td>
-            </tr>
-            <!-- Для каждого поста будете генерироваться новая строчка,
-            т.е. новый HTML код, который указан в теле цикла.
-            При этом сам цикл работает точно так же, как и в Python.
-            product — переменная цикла, т.е. наш товар полученный из списка -->
-            {% for item in news %}
-            <tr>
-                <!-- Не забываем, что переменные в шаблоне ничем не отличаются
-                от переменных в Python. Здесь также можно получать доступ к
-                полям объекта модели. Например, здесь мы выводим имя,
-                в следующем столбце описание, и т.д.  -->
-                <td>{{ item.title|censor }}</td>
-                <td>{{ item.date_time|date:'d M Y' }}</td>
-                <td>{{ item.text|truncatewords:20|censor }}
-            {% endfor %}
-       </table> <!-- ... и таблицы -->
-    {% else %}
-        <!-- Если новостей нет, говорим, что новостей нет ;) -->
-        <h1>Новостей нет!</h1>
-    {% endif %}
+<style>
+html, body { height:100%; margin:0; }
+.page-container { display:flex; flex-direction:column; min-height:100vh; }
+.content { flex:1; padding-bottom:70px; } /* место под пагинатор */
+.pagination-container {
+    position: fixed; bottom:0; left:0; width:100%;
+    background:#f1f1f1; text-align:center; padding:10px 0;
+    box-shadow:0 -2px 5px rgba(0,0,0,0.1); z-index:1000;
+}
+</style>
+
+<div class="page-container">
+
+    <!-- Фильтры -->
+    <form method="GET" style="
+        display:flex; gap:20px;
+        align-items:center;
+        justify-content: center; /* центрирование по горизонтали */
+        flex-wrap:nowrap;
+        margin-top: 10px; /* отступ сверху */
+        margin-bottom: 10px; /* отступ снизу */
+    ">
+        <div>
+            <label>{{ filterset.form.date.label }}</label><br>
+            {{ filterset.form.date }}
+        </div>
+        <div>
+            <label>{{ filterset.form.name.label }}</label><br>
+            {{ filterset.form.name }}
+        </div>
+        <div>
+            <label>{{ filterset.form.author.label }}</label><br>
+            {{ filterset.form.author }}
+        </div>
+        <button type="submit">Фильтровать</button>
+        <a href="{% url 'post_list' %}"><button type="button">Показать все</button></a>
+    </form>
+
+    <hr>
+
+    <!-- Контент новостей -->
+    <div class="content">
+        {% if news %}
+            <h1 style="text-align: left;">Всего новостей: {{ news|length }}</h1>
+            <table>
+                <tr>
+                    <td>Заголовок</td>
+                    <td>Дата</td>
+                    <td>Тип поста</td>
+                    <td>Предпросмотр</td>
+                </tr>
+                {% for item in news %}
+                <tr>
+                    <td>{{ item.title|censor }}</td>
+                    <td>{{ item.date_time|date:'d M Y' }}</td>
+                    <td>{{ item.get_post_type_display }}</td>
+                    <td>{{ item.text|truncatewords:20|censor }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <h1>Новостей нет!</h1>
+        {% endif %}
+    </div>
+
+    <!-- Фиксированный пагинатор -->
+    <div class="pagination-container">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.number > 1 %}
+                    <li class="page-item"><a class="page-link" href="?page=1">Первая</a></li>
+                {% endif %}
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">⮜</a></li>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num == page_obj.number %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">⮞</a></li>
+                {% endif %}
+                {% if page_obj.number < page_obj.paginator.num_pages %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+</div> <!-- page-container -->
+
 {% endblock content %}
