@@ -3,6 +3,7 @@ from django.urls import path
 from .views import PostsList, PostDetail, SearchNews
 
 urlpatterns = [
+
     # path — означает путь.
     # В данном случае путь ко всем товарам у нас останется пустым,
     # чуть позже станет ясно почему.
@@ -13,4 +14,5 @@ urlpatterns = [
     path('news/<int:pk>', PostDetail.as_view(), name='detail'),  # <-- имя добавлено
     path('<int:pk>', PostDetail.as_view() , name='post_detail'),
     path('search/', SearchNews.as_view(), name='news_search'),  # <-- новый путь
+
 ]
