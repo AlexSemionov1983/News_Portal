@@ -18,8 +18,9 @@ class PostsList(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset())
+        context['total_news'] = self.get_queryset().count()  # <-- добавляем общее количество
         return context
-    
+
 
 class SearchNews(ListView):
     model = Post
@@ -36,6 +37,7 @@ class SearchNews(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filterset'] = self.filterset
+        context['total_news'] = self.get_queryset().count()  # <-- добавляем общее количество
         return context
 
 
