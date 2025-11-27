@@ -62,7 +62,9 @@ html, body { height:100%; margin:0; }
                 </tr>
                 {% for item in news %}
                 <tr>
-                    <td>{{ item.title|censor }}</td>
+                    <td>
+                        <a href="{% url 'post' item.id %}">{{ item.title|censor }}</a>
+                    </td>
                     <td>{{ item.date_time|date:'d M Y' }}</td>
                     <td>{{ item.get_post_type_display }}</td>
                     <td>{{ item.text|truncatewords:20|censor }}</td>
