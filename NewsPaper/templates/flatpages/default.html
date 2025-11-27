@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>{% block title %}Bare - Start Bootstrap Template{% endblock title %}</title>
+        <title>{% block title %}NewsPortal{% endblock title %}</title>
 
         {% load static %}
 
@@ -38,6 +38,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'news_search' %}">Search</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'news_add' %}">Add post</a>
                         </li>
 
                     </ul>

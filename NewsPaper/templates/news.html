@@ -22,7 +22,11 @@ NewsPortal
                 </tr>
                 {% for item in news %}
                 <tr>
-                    <td>{{ item.title|censor }}</td>
+                    <td>
+                        <!-- При нажатии на заголовок в таблице нас теперь будет перекидывать на страницу с информацией о посте -->
+                        <a href="{% url 'post' item.id %}">{{ item.title|censor }}</a>
+
+                    </td>
                     <td>{{ item.date_time|date:'d M Y' }}</td>
                     <td>{{ item.text|truncatewords:20|censor }}</td>
                 </tr>
@@ -32,9 +36,5 @@ NewsPortal
             <h1>Новостей нет!</h1>
         {% endif %}
     </div>
-    <form method="POST">
-    {% csrf_token %}
-    {{ form }} <!-- Теперь нам нужна только готовая форма и кнопка -->
-    <input type="submit" value="Создать">
-</form>
+
 {% endblock content %}
